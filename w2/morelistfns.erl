@@ -1,51 +1,47 @@
--module(morelistfns).
--import(lists,[append/1]).
--export([double/1,evens/1,median/1,modes/1,average/1]).
+-module( morelistfns ).
+-import( lists,[append/1] ).
+-export( [double/1,evens/1,median/1,modes/1,average/1] ).
 
-% if the list is empty, then return zero
-double([]) ->
+double( [] ) ->
 	0;
-% if the list has one or more elements, then call double/2 with remaning elements (Xs) and the first element doubled
-double([X|Xs]) ->
-	double(Xs, [X*2]).
-% if the list remainder ([]) is empty, then just return the doubled elements (Ys)
-double([], Ys) ->
-	Ys;
-% if the list has one or more ([X|Xs]) undoubled elements, then call double/2 on remainder of undoubled elements (Xs) and the doubled elements (Ys) with the 1st element of undoubled elements doubled and appended to it.
-double([X|Xs], Ys) ->
-	double(Xs, lists:append(Ys,[(X*2)])).
+double( [FirstUndoubled|RemainingUndoubled] ) ->
+	double( RemainingUndoubled, [FirstUndoubled*2] ).
+double( [], Doubled ) ->
+	Doubled;
+double( [FirstToDouble|RemainingToDouble], Doubled ) ->
+	double( RemainingToDouble, lists:append( Doubled,[( FirstToDouble*2 )] ) ).
 
-evens([]) ->
+evens( [] ) ->
 	0;
-evens([X|Xs]) ->
-	evens(lists:append(Xs,[X]), []).
-evens([X|Xs],Ys) when (X rem 2 =:= 0) and (X =/= 0) ->
-	evens(Xs, lists:append(Ys,[X]));
-evens([_X|Xs],Ys) ->
-	evens(Xs, Ys);
-evens([],Ys) ->
-	Ys.
+evens( [FirstUnfiltered|RemainingUnfiltered] ) ->
+	evens( lists:append( RemainingUnfiltered,[FirstUnfiltered] ), [] ).
+evens( [FirstUnfiltered|RemainingUnfiltered],Filtered ) when ( FirstUnfiltered rem 2 =:= 0 ) and ( FirstUnfiltered =/= 0 ) ->
+	evens( RemainingUnfiltered, lists:append( Filtered,[FirstUnfiltered] ) );
+evens( [_FirstUnfiltered|RemainingUnfiltered],Filtered ) ->
+	evens( RemainingUnfiltered, Filtered );
+evens( [],Filtered ) ->
+	Filtered.
 
-average([]) ->
+average( [] ) ->
 	0;
-average([X|Xs]) ->
-	average(X,1,Xs).
-average(Sum,Count,[]) ->
+average( [X|Xs] ) ->
+	average( X,1,Xs ).
+average( Sum,Count,[] ) ->
 	Sum div Count;
-average(Sum,Count,[X|Xs]) -> 
-	average(Sum+X,Count+1,Xs).
+average( Sum,Count,[X|Xs] ) -> 
+	average( Sum+X,Count+1,Xs ).
 
-median([]) -> 
+median( [] ) -> 
 	0;
-median([X|Xs]) -> 
-	median(lists:sort([X|Xs],length([X|Xs]))).
-median(Nums,Len) when (Len rem 2 =:= 1) -> 
-	list:nth(Len div 2 + 1, Nums);
-median(Nums,Len) -> 
-	average(Nums,(Len div 2),(Len div 2 + 1)).
+median( [X|Xs] ) -> 
+	median( lists:sort( [X|Xs],length( [X|Xs] ) ) ).
+median( Nums,Len ) when ( Len rem 2 =:= 1 ) -> 
+	list:nth( Len div 2 + 1, Nums );
+median( Nums,Len ) -> 
+	average( Nums,( Len div 2 ),( Len div 2 + 1 ) ).
 
-%mode([X|Xs],Y) when X =:= Y -> ,
-%mode([],_) -> [];
+%mode( [X|Xs],Y ) when X =:= Y -> ,
+%mode( [],_ ) -> [];
 %
-modes([]) -> 
+modes( [] ) -> 
 	0.
