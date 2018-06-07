@@ -40,10 +40,17 @@ median( [Num|Nums], Len ) when ( Len rem 2 =:= 1 ) ->
 median( [Num|Nums], Len ) -> 
 	average( [ lists:nth( (Len div 2), [Num|Nums] ), lists:nth( (Len div 2 + 1), [Num|Nums] ) ] ).
 
-mode( [], _, _ ) -> [];
-mode( [First|Remaining], Num, Count ) when ( First =:= Num ) ->  
-	mode( Remaining, Num, Count+1 ).
+% personally, I feel like the modes function is not well defined. If the list contains one number, then we are only supposed to return a list with that number. If the list contains many numbers, then we are to return a list of numbers which appear most frequently. But what are we supposed to do when the list contains all unique numers? Just return the list of unique numbers? After all, the are the numbers which occur most frequently... But they all only occur once, so that doesn't seem like quite a correct answer either. If they are supposed to be returned, then it seems like what this function really should do is just return a list where any duplicated numbers are de-duped, so only unique numbers remain. This is my best guess to what should be done here, so that's how my modes/2 will work:
 
 modes( [] ) -> 
-	0.
-% map mode/2 across list in modes/1, transforming into list of hashes (Num, Count), then return Num w/ highest Coun
+	[];
+modes( [X|Xs] ) when ( length(Xs) =:= 0 ) ->
+	lists:append([],[X]);
+modes( [X|Xs] ) ->
+	lists:foldr(fun(Elem, Acc) ->
+		case lists:member(Elem, Acc) of
+			false -> Acc; % false -> Acc; % Is Elem inside Acc already?
+			true -> [Elem|Acc]%;
+			%{true,Value} -> [Value|Acc]
+		end
+	end, [], [X|Xs]).
